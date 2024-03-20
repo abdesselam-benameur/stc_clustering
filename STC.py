@@ -8,7 +8,7 @@ import tensorflow as tf
 from sklearn.cluster import KMeans
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
-from tensorflow.python.keras.optimizers import SGD
+from keras.optimizers import SGD
 
 import metrics
 from data_loader import load_data
@@ -46,7 +46,7 @@ class ClusteringLayer(tf.keras.layers.Layer):
 
     def build(self, input_shape):
         assert len(input_shape) == 2
-        input_dim = input_shape[1].value
+        input_dim = input_shape[1]
         self.input_spec = tf.keras.layers.InputSpec(dtype=tf.keras.backend.floatx(), shape=(None, input_dim))
         self.clusters = self.add_weight(shape=(self.n_clusters, input_dim), initializer='glorot_uniform',
                                         name='clusters')
@@ -208,8 +208,8 @@ if __name__ == "__main__":
     parser.add_argument('--pretrain_epochs', default=15, type=int)
     parser.add_argument('--update_interval', default=30, type=int)
     parser.add_argument('--tol', default=0.0001, type=float)
-    parser.add_argument('--ae_weights', default='/data/search_snippets/results/ae_weights.h5')
-    parser.add_argument('--save_dir', default='/data/search_snippets/results/')
+    parser.add_argument('--ae_weights', default='data/search_snippets/results/ae_weights.h5')
+    parser.add_argument('--save_dir', default='data/search_snippets/results/')
     args = parser.parse_args()
 
     if not os.path.exists(args.save_dir):
@@ -239,7 +239,10 @@ if __name__ == "__main__":
 
     # create model
     ####################################################################################
-    dec = STC(dims=[x.shape[-1], 500, 500, 2000, 20], n_clusters=n_clusters)
+    if args.dataset == 'search_snippets':
+        dec = STC(dims=[x.shape[-1], 512, 512, 2000, 20], n_clusters=n_clusters)
+    else:
+        dec = STC(dims=[x.shape[-1], 500, 500, 2000, 20], n_clusters=n_clusters)
 
     # pretrain model
     ####################################################################################
