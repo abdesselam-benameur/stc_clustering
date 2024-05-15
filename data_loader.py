@@ -2,6 +2,7 @@
 
 import os
 from collections import Counter
+from sentence_transformers import SentenceTransformer
 import nltk
 import numpy as np
 import scipy.io
@@ -93,6 +94,19 @@ def load_stackoverflow(data_path="data/stackoverflow/", use_SIF=True):
     return XX, y
 
 
+def load_stackoverflow_sentence_transformers(model, data_path="data/stackoverflow/"):
+    with open(data_path + "SearchSnippets.txt", "r", encoding="utf-8") as inp_indx:
+        # read with readline and delete \n in each line
+        lines = [line.rstrip() for line in inp_indx]
+        x = model.encode(lines)
+        with open(
+            data_path + "label_StackOverflow.txt", "r", encoding="utf-8"
+        ) as label_file:
+            y = np.array(list((map(int, label_file.readlines()))))
+
+        return x, y
+
+
 def load_search_snippet2(data_path="data/SearchSnippets/", use_SIF=True):
     mat = scipy.io.loadmat(data_path + "SearchSnippets-STC2.mat")
 
@@ -174,6 +188,20 @@ def load_search_snippet2(data_path="data/SearchSnippets/", use_SIF=True):
         XX = all_vector_representation
 
     return XX, y
+
+
+def load_searchsnippets_sentence_transformers(model, data_path="data/SearchSnippets/"):
+    with open(data_path + "SearchSnippets.txt", "r", encoding="utf-8") as inp_indx:
+        # read with readline and delete \n in each line
+        lines = [line.rstrip() for line in inp_indx]
+        x = model.encode(lines)
+
+        with open(
+            data_path + "SearchSnippets_gnd.txt", "r", encoding="utf-8"
+        ) as label_file:
+            y = np.array(list((map(int, label_file.readlines()))))
+
+        return x, y
 
 
 def load_biomedical(data_path="data/Biomedical/", use_SIF=True):
@@ -259,13 +287,31 @@ def load_biomedical(data_path="data/Biomedical/", use_SIF=True):
     return XX, y
 
 
-def load_data(dataset_name, use_SIF=True):
+def load_biomedical_sentence_transformers(model, data_path="data/Biomedical/"):
+    with open(data_path + "Biomedical.txt", "r", encoding="utf-8") as inp_indx:
+        # read with readline and delete \n in each line
+        lines = [line.rstrip() for line in inp_indx]
+        x = model.encode(lines)
+
+        with open(
+            data_path + "Biomedical_gnd.txt", "r", encoding="utf-8"
+        ) as label_file:
+            y = np.array(list((map(int, label_file.readlines()))))
+
+        return x, y
+
+
+def load_data(dataset_name,use_SIF=True):
     print("load data")
+    model = SentenceTransformer("all-MiniLM-L6-v2")
     if dataset_name == "stackoverflow":
+        # return load_stackoverflow_sentence_transformers(model=model)
         return load_stackoverflow(use_SIF)
     elif dataset_name == "biomedical":
+        # return load_biomedical_sentence_transformers(model=model)
         return load_biomedical(use_SIF)
     elif dataset_name == "searchSnippets":
+        # return load_searchsnippets_sentence_transformers(model=model)
         return load_search_snippet2(use_SIF)
     else:
         raise Exception("dataset not found...")
