@@ -108,4 +108,16 @@ venv.bak/
 
 # others
 notebooks/
-data/
+
+.DS_store
+.vscode
+.idea
+
+.DS_store
+.vscode
+.idea
+# word2vec model
+*.vec
+
+# others
+notebooks/

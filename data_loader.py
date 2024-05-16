@@ -13,11 +13,9 @@ from sklearn.preprocessing import MinMaxScaler
 def load_stackoverflow(data_path="data/stackoverflow/", use_SIF=True):
 
     # load SO embedding
-    with open(data_path + "vocab_withIdx.dic", "r", encoding="utf-8") as inp_indx, open(
-        data_path + "vocab_emb_Word2vec_48_index.dic", "r", encoding="utf-8"
-    ) as inp_dic, open(
-        data_path + "vocab_emb_Word2vec_48.vec", encoding="utf-8"
-    ) as inp_vec:
+    with open(data_path + 'vocab_withIdx.dic', 'r', encoding='utf-8') as inp_indx, \
+            open(data_path + 'vocab_emb_Word2vec_48_index.dic', 'r', encoding='utf-8') as inp_dic, \
+            open(data_path + 'vocab_emb_Word2vec_48.vec', encoding='utf-8') as inp_vec:
         pair_dic = inp_indx.readlines()
         word_index = {}
         for pair in pair_dic:
@@ -38,7 +36,7 @@ def load_stackoverflow(data_path="data/stackoverflow/", use_SIF=True):
         del emb_index
         del emb_vec
 
-    with open(data_path + "title_StackOverflow.txt", "r", encoding="utf-8") as inp_txt:
+    with open(data_path + 'title_StackOverflow.txt', 'r', encoding='utf-8') as inp_txt:
         all_lines = inp_txt.readlines()[:-1]
         text_file = " ".join([" ".join(nltk.word_tokenize(c)) for c in all_lines])
         word_count = Counter(text_file.split())
@@ -87,7 +85,7 @@ def load_stackoverflow(data_path="data/stackoverflow/", use_SIF=True):
     else:
         XX = all_vector_representation
 
-    with open(data_path + "label_StackOverflow.txt", encoding="utf-8") as label_file:
+    with open(data_path + 'label_StackOverflow.txt', encoding='utf-8') as label_file:
         y = np.array(list((map(int, label_file.readlines()))))
         print(y.dtype)
 
@@ -119,9 +117,7 @@ def load_search_snippet2(data_path="data/SearchSnippets/", use_SIF=True):
     rand_seed = 0
 
     # load SO embedding
-    with open(
-        data_path + "SearchSnippets_vocab2idx.dic", "r", encoding="utf-8"
-    ) as inp_indx:
+    with open(data_path + 'SearchSnippets_vocab2idx.dic', 'r', encoding='utf-8') as inp_indx:
         pair_dic = inp_indx.readlines()
         word_index = {}
         for pair in pair_dic:
@@ -140,7 +136,7 @@ def load_search_snippet2(data_path="data/SearchSnippets/", use_SIF=True):
         del emb_index
         del emb_vec
 
-    with open(data_path + "SearchSnippets.txt", "r", encoding="utf-8") as inp_txt:
+    with open(data_path + 'SearchSnippets.txt', 'r', encoding='utf-8') as inp_txt:
         all_lines = inp_txt.readlines()[:-1]
         all_lines = [line for line in all_lines]
         text_file = " ".join([" ".join(nltk.word_tokenize(c)) for c in all_lines])
@@ -216,9 +212,7 @@ def load_biomedical(data_path="data/Biomedical/", use_SIF=True):
     rand_seed = 0
 
     # load SO embedding
-    with open(
-        data_path + "Biomedical_vocab2idx.dic", "r", encoding="utf-8"
-    ) as inp_indx:
+    with open(data_path + 'Biomedical_vocab2idx.dic', 'r', encoding='utf-8') as inp_indx:
         # open(data_path + 'vocab_emb_Word2vec_48_index.dic', 'r') as inp_dic, \
         # open(data_path + 'vocab_emb_Word2vec_48.vec') as inp_vec:
         pair_dic = inp_indx.readlines()
@@ -239,7 +233,7 @@ def load_biomedical(data_path="data/Biomedical/", use_SIF=True):
         del emb_index
         del emb_vec
 
-    with open(data_path + "Biomedical.txt", "r", encoding="utf-8") as inp_txt:
+    with open(data_path + 'Biomedical.txt', 'r', encoding='utf-8') as inp_txt:
         all_lines = inp_txt.readlines()[:-1]
         # print(sum([len(line.split()) for line in all_lines])/20000) #avg length
         text_file = " ".join([" ".join(nltk.word_tokenize(c)) for c in all_lines])
