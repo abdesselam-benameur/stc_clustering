@@ -9,6 +9,7 @@ from sklearn.cluster import KMeans
 from sklearn.model_selection import train_test_split
 from sklearn.utils import shuffle
 from keras.optimizers import SGD
+# import tensorflow.keras.optimizers.legacy.SGD as SGD
 
 import metrics
 from data_loader import load_data
@@ -111,7 +112,7 @@ class STC(object):
                     feature_model = tf.keras.models.Model(self.model.input,
                                                           self.model.get_layer('encoder_3').output)
                     features = feature_model.predict(self.x)
-                    km = KMeans(n_clusters=len(np.unique(self.y)), n_init=20, n_jobs=4)
+                    km = KMeans(n_clusters=len(np.unique(self.y)), n_init=20)
                     y_pred = km.fit_predict(features)
                     # print()
                     print(' ' * 8 + '|==>  acc: %.4f,  nmi: %.4f  <==|'
@@ -119,7 +120,7 @@ class STC(object):
 
         # begin pretraining
         t0 = time()
-        self.autoencoder.fit(x, x, batch_size=batch_size, epochs=epochs)
+        self.autoencoder.fit(x, x, batch_size=batch_size, epochs=epochs)#, callbacks=[PrintACC(x, y)])
         print('Pretraining time: %ds' % round(time() - t0))
         self.autoencoder.save_weights(save_dir + '/ae_weights.h5')
         print('Pretrained weights are saved to %s/ae_weights.h5' % save_dir)
@@ -140,10 +141,10 @@ class STC(object):
         weight = q ** 2 / q.sum(0)
         return (weight.T / weight.sum(1)).T
 
-    def compile(self, optimizer='sgd', loss='kld'):
+    def compile(self, optimizer='sgd', loss='kld'):  # kld: Kullback-Leibler divergence
         self.model.compile(optimizer=optimizer, loss=loss)
 
-    def fit(self, x, y=None, maxiter=2e4, batch_size=256, tol=1e-3,
+    def fit(self, x, y=None, maxiter=2e4, batch_size=256, tol=1e-3, # tol = 0.001 (0.1%)
             update_interval=140, save_dir='./results/temp', rand_seed=None):
 
         print('Update interval', update_interval)
@@ -175,13 +176,13 @@ class STC(object):
                 # check stop criterion
                 delta_label = np.sum(y_pred != y_pred_last).astype(np.float32) / y_pred.shape[0]
                 y_pred_last = np.copy(y_pred)
-                if ite > 0 and delta_label < tol:
+                if ite > 0 and delta_label < tol:  # we stop when the change in the labels is less than 0.1%
                     print('delta_label ', delta_label, '< tol ', tol)
                     print('Reached tolerance threshold. Stopping training.')
                     break
 
             idx = index_array[index * batch_size: min((index + 1) * batch_size, x.shape[0])]
-            loss = self.model.train_on_batch(x=x[idx], y=p[idx])
+            loss = self.model.train_on_batch(x=x[idx], y=p[idx])  # input is x, output is p
             index = index + 1 if (index + 1) * batch_size <= x.shape[0] else 0
 
             ite += 1
@@ -200,7 +201,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='train',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--dataset', default='stackoverflow',
+    parser.add_argument('--dataset', default='biomedical',
                         choices=['stackoverflow', 'biomedical', 'search_snippets'])
 
     parser.add_argument('--batch_size', default=64, type=int)
@@ -208,8 +209,8 @@ if __name__ == "__main__":
     parser.add_argument('--pretrain_epochs', default=15, type=int)
     parser.add_argument('--update_interval', default=30, type=int)
     parser.add_argument('--tol', default=0.0001, type=float)
-    parser.add_argument('--ae_weights', default='data/search_snippets/results/ae_weights.h5')
-    parser.add_argument('--save_dir', default='data/search_snippets/results/')
+    parser.add_argument('--ae_weights', default='data/Biomedical/results/ae_weights.h5')
+    parser.add_argument('--save_dir', default='data/Biomedical/results/')
     args = parser.parse_args()
 
     if not os.path.exists(args.save_dir):

@@ -44,6 +44,7 @@ def load_stackoverflow(data_path="data/stackoverflow/", use_SIF=True):
         unigram = {}
         for item in word_count.items():
             unigram[item[0]] = item[1] / total_count
+            # unigram[item[0]] is equal to the occurence of the word in the corpus divided by the total number of tokens in the corpus
 
         all_vector_representation = np.zeros(shape=(20000, 48))
         for i, line in enumerate(all_lines):
@@ -60,10 +61,10 @@ def load_stackoverflow(data_path="data/stackoverflow/", use_SIF=True):
                     continue
                 if use_SIF:
                     weight = 0.1 / (0.1 + unigram[word])
-                    sent_rep += wv * weight
+                    sent_rep += wv * weight # weighted sum of word vectors
                 else:
                     sent_rep += wv
-            if j != 0:
+            if j != 0: # j represents the number of words in the sentence that have a word vector representation
                 all_vector_representation[i] = sent_rep / j
             else:
                 all_vector_representation[i] = sent_rep
@@ -71,11 +72,11 @@ def load_stackoverflow(data_path="data/stackoverflow/", use_SIF=True):
     if use_SIF:
         pca = PCA(n_components=1)
         pca.fit(all_vector_representation)
-        pca = pca.components_
-
+        pca = pca.components_ # Principal axes
+    # remove the first principal component (all_vector_representation.dot(pca.transpose()) * pca is the projection of all_vector_representation on the 1st principal component)
         XX1 = (
             all_vector_representation
-            - all_vector_representation.dot(pca.transpose()) * pca
+            - all_vector_representation.dot(pca.transpose()) * pca 
         )
 
         XX = XX1
