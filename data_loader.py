@@ -301,12 +301,12 @@ def load_data(dataset_name,use_SIF=True):
     model = SentenceTransformer("all-MiniLM-L6-v2")
     if dataset_name == "stackoverflow":
         # return load_stackoverflow_sentence_transformers(model=model)
-        return load_stackoverflow(use_SIF)
+        return load_stackoverflow(use_SIF=use_SIF)
     elif dataset_name == "biomedical":
         # return load_biomedical_sentence_transformers(model=model)
-        return load_biomedical(use_SIF)
+        return load_biomedical(use_SIF=use_SIF)
     elif dataset_name == "searchSnippets":
         # return load_searchsnippets_sentence_transformers(model=model)
-        return load_search_snippet2(use_SIF)
+        return load_search_snippet2(use_SIF=use_SIF)
     else:
         raise Exception("dataset not found...")
